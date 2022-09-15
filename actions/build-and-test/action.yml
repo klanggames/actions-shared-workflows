@@ -5,6 +5,9 @@ inputs:
     description: Path to the project or solution folder
     required: false
     default: ./src
+branding:
+  icon: 'award'  
+  color: 'orange'
 
 runs:
   using: "composite"
