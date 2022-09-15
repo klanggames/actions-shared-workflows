@@ -1,0 +1,54 @@
+name: Publish NuGet
+description: Publishes an NuGet package to a registry.
+inputs:
+  project-path:
+    description: The path to the project to publish
+    required: true
+  token:
+    description: Node authentication token
+    default: ${{ github.token }}
+    required: false
+
+branding:
+  icon: 'upload'  
+  color: 'orange'
+
+runs:
+  using: composite
+  steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.13
+        with:
+          versionSpec: "5.x"
+
+      - name: Create GitVersion.yml
+        run: |
+          echo "mode: Mainline" > GitVersion.yml
+
+      - name: Use GitVersion
+        uses: gittools/actions/gitversion/execute@v0.9.13
+        id: gitversion
+
+      - run: |
+          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
+
+      - name: Restore
+        run: dotnet restore ${{ inputs.project-path }}
+
+      - name: Pack
+        run: dotnet pack ${{ inputs.project-path }} --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ github.workspace }}/output
+
+      - name: Prepare NuGet Source
+        run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
+
+      - name: NuGet Publish
+        run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ inputs.token }} --source "github" --skip-duplicate

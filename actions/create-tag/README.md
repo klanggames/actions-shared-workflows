@@ -17,7 +17,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  create-tag:
     runs-on: ubuntu-latest
       steps:
         - name: Create Tag
