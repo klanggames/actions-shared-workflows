@@ -1,0 +1,36 @@
+name: Build and Test
+description: Build and test a dotnet project
+inputs:
+  project-path:
+    description: Path to the project or solution folder
+    required: false
+    default: ./src
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: "6.0.x"
+
+    - name: Restore
+      shell: bash
+      run: dotnet restore ${{ inputs.project-path }}
+
+    - name: Build
+      shell: bash
+      run: dotnet build ${{ inputs.project-path }} --no-restore -c Release
+
+    - name: Test
+      shell: bash
+      run: dotnet test ${{ inputs.project-path }} --logger trx --results-directory "${{ github.workspace }}/TestResults"
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-results
+        path: ${{ github.workspace }}/TestResults
+      if: ${{ always() }}
