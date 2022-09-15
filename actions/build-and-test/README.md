@@ -1,4 +1,4 @@
-# `checkout-and-yarn` - **Github Action**
+# `build-and-test` - **Github Action**
 
 This action checks out the commit, and runs build and test on it
 
