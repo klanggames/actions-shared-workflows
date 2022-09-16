@@ -1,14 +1,5 @@
 name: Setup GitVersion
 description: Install GitVersion and create default GitVersion.yml configuration
-inputs:
-  version:
-    decription: version
-    required: false
-    default: v0.9.13
-  versionSpec:
-    decription: versionSpec
-    required: false
-    default: 5.x
 outputs:
   fullSemVer:
     description: "fullSemVer"
@@ -19,9 +10,9 @@ runs:
 
   steps:
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@${{ inputs.version }}
+      uses: gittools/actions/gitversion/setup@v0.9.13
       with:
-        versionSpec: "${{ inputs.versionSpec }}"
+        versionSpec: "5.x"
 
     - name: Create GitVersion.yml
       shell: bash
@@ -29,7 +20,7 @@ runs:
         echo "mode: Mainline" > GitVersion.yml
 
     - name: Use GitVersion
-      uses: gittools/actions/gitversion/execute@${{ inputs.version }}
+      uses: gittools/actions/gitversion/execute@v0.9.13
       id: gitversion
 
     - run: |
