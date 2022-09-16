@@ -4,6 +4,9 @@ inputs:
   project-path:
     description: The path to the project to publish
     required: true
+  tool-token:
+    description: github token used to download the unity npm packager tool
+    required: true
   output-folder:
     description: The path to the npm output folder.
     default: ${{ github.workspace }}/.npm
@@ -20,13 +23,6 @@ inputs:
     description: Node authentication token
     default: ${{ github.token }}
     required: false
-  tool-token:
-    description: github token used to download the unity npm packager tool
-    required: true
-
-branding:
-  icon: 'upload'  
-  color: 'orange'
 
 runs:
   using: composite
@@ -51,23 +47,9 @@ runs:
       with:
         dotnet-version: 6.0.x
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
-      with:
-        versionSpec: "5.x"
-
-    - name: Create GitVersion.yml
-      run: |
-        echo "mode: Mainline" > GitVersion.yml
-      shell: bash
-
-    - name: Use GitVersion
-      uses: gittools/actions/gitversion/execute@v0.9.13
+    - name: Setup GitVersion
+      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
       id: gitversion
-
-    - run: |
-        echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-      shell: bash
 
     - name: Create Unity NPM Package
       shell: bash

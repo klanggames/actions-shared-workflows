@@ -9,10 +9,6 @@ inputs:
     default: ${{ github.token }}
     required: false
 
-branding:
-  icon: 'upload'  
-  color: 'orange'
-
 runs:
   using: composite
   steps:
@@ -25,23 +21,9 @@ runs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.13
-        with:
-          versionSpec: "5.x"
-
-      - name: Create GitVersion.yml
-        run: |
-          echo "mode: Mainline" > GitVersion.yml
-        shell: bash
-
-      - name: Use GitVersion
-        uses: gittools/actions/gitversion/execute@v0.9.13
+      - name: Setup GitVersion
+        uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
         id: gitversion
-
-      - run: |
-          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-        shell: bash
 
       - name: Restore
         run: dotnet restore ${{ inputs.project-path }}
