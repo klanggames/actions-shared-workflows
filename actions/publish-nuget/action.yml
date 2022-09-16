@@ -57,3 +57,4 @@ runs:
 
       - name: NuGet Publish
         run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ inputs.token }} --source "github" --skip-duplicate
+        shell: bash
