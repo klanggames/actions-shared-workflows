@@ -41,6 +41,7 @@ runs:
         gh release download --repo klanggames/tool-unity-npm-packager v${{ inputs.tool-version }} -p '*linux-x64.zip'
         unzip unity-npm-packager-${{ inputs.tool-version }}-linux-x64 -d ./unity-npm-packager
         chmod +x -R ./unity-npm-packager/
+      shell: bash
       env:
         # secrets.GITHUB_TOKEN does not give enough permissions to download releases from annother repo. So, we have
         # to use a PAT with sufficient permissions here.

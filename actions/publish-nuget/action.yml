@@ -33,6 +33,7 @@ runs:
       - name: Create GitVersion.yml
         run: |
           echo "mode: Mainline" > GitVersion.yml
+        shell: bash
 
       - name: Use GitVersion
         uses: gittools/actions/gitversion/execute@v0.9.13
@@ -40,15 +41,19 @@ runs:
 
       - run: |
           echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
+        shell: bash
 
       - name: Restore
         run: dotnet restore ${{ inputs.project-path }}
+        shell: bash
 
       - name: Pack
         run: dotnet pack ${{ inputs.project-path }} --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ github.workspace }}/output
+        shell: bash
 
       - name: Prepare NuGet Source
         run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
+        shell: bash
 
       - name: NuGet Publish
         run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ inputs.token }} --source "github" --skip-duplicate
