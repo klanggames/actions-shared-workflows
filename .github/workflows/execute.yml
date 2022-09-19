@@ -1,0 +1,21 @@
+name: Build, Test and Publish
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - ".devcontainer/**"
+      - "**/README.md"
+
+jobs:
+  publish-nuget:
+    runs-on: ubuntu-latest
+
+  create-tag:
+    runs-on: ubuntu-latest
+    needs:
+      - publish-nuget
+    steps:
+      - name: Create Tag
+        uses: klanggames/actions-shared-workflows/actions/create-tag@v1.0.0
