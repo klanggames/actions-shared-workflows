@@ -12,31 +12,31 @@ inputs:
 runs:
   using: composite
   steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.x
+    - uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
 
-      - name: Setup GitVersion
-        uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
-        id: gitversion
+    - name: Prepare NuGet Source
+      run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
+      shell: bash
 
-      - name: Restore
-        run: dotnet restore ${{ inputs.project-path }}
-        shell: bash
+    - name: Setup GitVersion
+      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+      id: gitversion
 
-      - name: Pack
-        run: dotnet pack ${{ inputs.project-path }} --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ github.workspace }}/output
-        shell: bash
+    - name: Restore
+      run: dotnet restore ${{ inputs.project-path }}
+      shell: bash
 
-      - name: Prepare NuGet Source
-        run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
-        shell: bash
+    - name: Pack
+      run: dotnet pack ${{ inputs.project-path }} --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ github.workspace }}/output
+      shell: bash
 
-      - name: NuGet Publish
-        run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ inputs.token }} --source "github" --skip-duplicate
-        shell: bash
+    - name: NuGet Publish
+      run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ inputs.token }} --source "github" --skip-duplicate
+      shell: bash
