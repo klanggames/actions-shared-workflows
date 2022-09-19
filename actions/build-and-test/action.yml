@@ -5,9 +5,10 @@ inputs:
     description: Path to the project or solution folder
     required: false
     default: ./src
-branding:
-  icon: 'award'  
-  color: 'orange'
+  token:
+    description: NuGet authentication token
+    default: ${{ github.token }}
+    required: false
 
 runs:
   using: "composite"
@@ -18,6 +19,10 @@ runs:
     - uses: actions/setup-dotnet@v2
       with:
         dotnet-version: "6.0.x"
+
+    - name: Prepare NuGet Source
+      run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
+      shell: bash
 
     - name: Restore
       shell: bash

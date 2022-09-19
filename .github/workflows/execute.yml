@@ -1,0 +1,16 @@
+name: Create Tag
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - ".devcontainer/**"
+      - "**/README.md"
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Tag
+        uses: klanggames/actions-shared-workflows/actions/create-tag@v1.0.0
