@@ -9,9 +9,6 @@ on:
       - "**/README.md"
 
 jobs:
-  publish-nuget:
-    runs-on: ubuntu-latest
-
   create-tag:
     runs-on: ubuntu-latest
     steps:
