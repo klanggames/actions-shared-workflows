@@ -9,8 +9,22 @@ on:
       - "**/README.md"
 
 jobs:
-  create-tag:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Tag
-        uses: klanggames/actions-shared-workflows/actions/create-tag@v1.0.0
+  - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+  - name: Setup GitVersion
+    uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+    id: gitversion
+
+  - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: Release ${{ steps.gitversion.outputs.majorMinorPatch }}
+        tag_name: v${{ steps.gitversion.outputs.majorMinorPatch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
