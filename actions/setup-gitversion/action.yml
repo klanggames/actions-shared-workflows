@@ -4,6 +4,13 @@ outputs:
   fullSemVer:
     description: "fullSemVer"
     value: ${{ steps.gitversion.outputs.fullSemVer }}
+  majorMinorPatch:
+    description: "majorMinorPatch"
+    value: ${{ steps.gitversion.outputs.majorMinorPatch }}
+  semVer:
+    description: "semVer"
+    value: ${{ steps.gitversion.outputs.semVer }}
+    
 
 runs:
   using: composite
