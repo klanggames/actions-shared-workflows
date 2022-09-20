@@ -13,7 +13,7 @@ inputs:
     required: false
   tool-version:
     description: Version of unity npm packager tool
-    default: 0.1.4
+    default: 0.1.5
     required: false
   registry:
     description: Target NPM registry
