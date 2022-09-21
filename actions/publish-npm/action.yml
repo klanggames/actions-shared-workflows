@@ -71,6 +71,7 @@ runs:
       working-directory: ${{ github.workspace }}/.npm
       shell: bash
       run: npm version ${{ steps.gitversion.outputs.fullSemVer }}
+      continue-on-error: true
 
     - name: NPM Publish
       working-directory: ${{ github.workspace }}/.npm
