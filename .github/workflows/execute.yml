@@ -22,12 +22,8 @@ jobs:
         id: gitversion
 
       - name: Create Release
-        uses: actions/create-release@v1
-        id: create_release
+        uses: ncipollo/release-action@v1
         with:
-          draft: false
-          prerelease: false
-          release_name: Release ${{ steps.gitversion.outputs.majorMinorPatch }}
-          tag_name: v${{ steps.gitversion.outputs.majorMinorPatch }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ steps.gitversion.outputs.majorMinorPatch }}
+          tag: v${{ steps.gitversion.outputs.majorMinorPatch }}
+          generateReleaseNotes: true

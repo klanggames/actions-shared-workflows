@@ -1,0 +1,159 @@
+name: Publish Grpc Client and Proto Packages
+description: Publishes NuGet and NPM gRPC client/proto packages to GitHub registries
+inputs:
+  grpc-service-name:
+    description: grpc service nme
+    required: true
+  project-path:
+    description: path the the services project
+    required: true
+  tool-download-token:
+    description: PAT to download tools from GitHub releases
+    required: true
+  nuget-auth-token:
+    description: PAT to read and write NuGet packages from/to GitHub NuGet registry
+    required: true
+  grpc-client-generator-version:
+    default: "1.0.13"
+    description: gRPC client generator tool version
+    required: false
+  channel-provider-version:
+    default: "1.0.0"
+    description: GRPCChannelProvider package version
+    required: false
+  unity-npm-packager-version:
+    default: "0.1.7"
+    description: unity-npm-packager tool version
+    required: false
+  node-auth-token:
+    default: ${{ github.token }}
+    description: node auth token to publish to GitHub NPM registry
+    required: false
+  service-name:
+    description: service name use in header for routing traffic
+    required: true
+  environment-port:
+    default: "0"
+    description: environment port
+    required: false
+  world-port:
+    default: "0"
+    description: world port
+    required: false
+  sector-port:
+    default: "0"
+    description: sector port
+    required: false
+  output-path:
+    default: ${{ github.workspace }}/.out
+    description: output folder
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Install Unity NPM Packager
+      run: |
+        gh release download --repo klanggames/tool-unity-npm-packager v${{ inputs.unity-npm-packager-version }} -p '*linux-x64.zip'
+        unzip unity-npm-packager-${{ inputs.unity-npm-packager-version }}-linux-x64 -d ./unity-npm-packager
+        chmod +x -R ./unity-npm-packager/
+      shell: bash
+      env:
+        # secrets.GITHUB_TOKEN does not give enough permissions to download releases from another repo. So, we have
+        # to use a PAT with sufficient permissions here.
+        GITHUB_TOKEN: ${{ inputs.tool-download-token }}
+
+    - name: Install gRPC Generator
+      run: |
+        gh release download --repo klanggames/tool-grpc-client-generator v${{ inputs.grpc-client-generator-version  }} -p '*linux-x64.zip'
+        unzip grpc-client-generator-${{ inputs.grpc-client-generator-version  }}-linux-x64 -d ./grpc-client-generator
+        chmod +x -R ./grpc-client-generator/
+      shell: bash
+      env:
+        # secrets.GITHUB_TOKEN does not give enough permissions to download releases from another repo. So, we have
+        # to use a PAT with sufficient permissions here.
+        GITHUB_TOKEN: ${{ inputs.tool-download-token }}
+
+    - name: Setup GitVersion
+      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@v1.0.9
+      id: gitversion
+
+    - uses: actions/setup-node@v3
+      with:
+        registry-url: https://npm.pkg.github.com
+
+    - name: Prepare NuGet Source
+      run: dotnet nuget add source --username klanggames --password ${{ inputs.nuget-auth-token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
+      shell: bash
+
+    - name: Create Proto and Client Packages
+      shell: bash
+      run: ./grpc-client-generator/bin/linux-x64/Klang.Seed.GrpcClientGenerator
+        --output ${{ inputs.output-path }}
+        --project ${{ inputs.project-path }}
+        --service ${{ inputs.service-name }}
+        --environment-port ${{ inputs.environment-port }}
+        --world-port ${{ inputs.world-port }}
+        --sector-port ${{ inputs.sector-port }}
+        --repository ${{ inputs.repository }}
+        --package-version ${{ steps.gitversion.outputs.fullSemVer }}
+        --description "${{ inputs.grpc-service-name }} client"
+        --grpc-service ${{ inputs.grpc-service-name }}
+        --channel-provider-version ${{ inputs.channel-provider-version }}
+
+    - name: Create Unity Client NPM Package
+      shell: bash
+      run: ./unity-npm-packager/bin/linux-x64/Klang.Seed.UnityNpmPackager --destination ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
+
+    - name: NuGet Proto Restore
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
+      run: dotnet restore
+      shell: bash
+
+    - name: NuGet Proto Pack
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      shell: bash
+
+    - name: NuGet Proto Publish
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
+      run: dotnet nuget push output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
+      shell: bash
+
+    - name: NuGet Client Restore
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-client
+      run: dotnet restore
+      shell: bash
+
+    - name: NuGet Client Pack
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-client
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      shell: bash
+
+    - name: NuGet Client Publish
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-client
+      run: dotnet nuget push output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
+      shell: bash
+
+    - name: NPM Publish Proto
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-proto
+      run: npm publish
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
+
+    - name: NPM Publish Client
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
+      run: npm publish
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
