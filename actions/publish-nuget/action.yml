@@ -2,7 +2,7 @@ name: Publish NuGet
 description: Publishes an NuGet package to a registry.
 inputs:
   project-path:
-    description: The path to the project to publish
+    description: The folder of project to publish
     required: true
   token:
     description: Node authentication token
@@ -30,13 +30,16 @@ runs:
       id: gitversion
 
     - name: Restore
-      run: dotnet restore ${{ inputs.project-path }}
+      working-directory: ${{ inputs.project-path }}
+      run: dotnet restore
       shell: bash
 
     - name: Pack
-      run: dotnet pack ${{ inputs.project-path }} --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ github.workspace }}/output
+      working-directory: ${{ inputs.project-path }}
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ inputs.project-path }}/output
       shell: bash
 
     - name: NuGet Publish
-      run: dotnet nuget push ${{ github.workspace }}/output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
+      working-directory: ${{ inputs.project-path }}
+      run: dotnet nuget push ${{ inputs.project-path }}/output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
       shell: bash
