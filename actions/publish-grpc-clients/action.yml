@@ -104,7 +104,7 @@ runs:
         --environment-port ${{ inputs.environment-port }}
         --world-port ${{ inputs.world-port }}
         --sector-port ${{ inputs.sector-port }}
-        --repository ${{ inputs.repository }}
+        --repository ${{ github.repository }}
         --package-version ${{ steps.gitversion.outputs.fullSemVer }}
         --description "${{ inputs.grpc-service-name }} client"
         --grpc-service ${{ inputs.grpc-service-name }}
