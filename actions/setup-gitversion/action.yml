@@ -7,10 +7,12 @@ outputs:
   majorMinorPatch:
     description: "majorMinorPatch"
     value: ${{ steps.gitversion.outputs.majorMinorPatch }}
+  major:
+    description: "major"
+    value: ${{ steps.gitversion.outputs.major }}
   semVer:
     description: "semVer"
     value: ${{ steps.gitversion.outputs.semVer }}
-    
 
 runs:
   using: composite

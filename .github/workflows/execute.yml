@@ -27,3 +27,10 @@ jobs:
           name: Release ${{ steps.gitversion.outputs.majorMinorPatch }}
           tag: v${{ steps.gitversion.outputs.majorMinorPatch }}
           generateReleaseNotes: true
+
+      - name: Add Version Tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: v${{ steps.gitversion.outputs.major }}
+          force_push_tag: true
+          github_token: ${{ github.token }}
