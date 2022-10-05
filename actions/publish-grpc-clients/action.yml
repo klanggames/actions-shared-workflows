@@ -14,7 +14,7 @@ inputs:
     description: PAT to read and write NuGet packages from/to GitHub NuGet registry
     required: true
   grpc-client-generator-version:
-    default: "1.0.13"
+    default: "1.0.14"
     description: gRPC client generator tool version
     required: false
   channel-provider-version:
