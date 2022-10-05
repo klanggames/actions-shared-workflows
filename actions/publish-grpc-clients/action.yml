@@ -143,7 +143,7 @@ runs:
       run: npm publish
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
+        NODE_AUTH_TOKEN: ${{ github.token }}
 
     - name: NPM Update Version
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
@@ -156,4 +156,4 @@ runs:
       run: npm publish
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
+        NODE_AUTH_TOKEN: ${{ github.token }}
