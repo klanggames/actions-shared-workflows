@@ -18,16 +18,15 @@ inputs:
     description: gRPC client generator tool version
     required: false
   channel-provider-version:
-    default: "1.0.0"
+    default: "6.0.1"
     description: GRPCChannelProvider package version
     required: false
+  package-version:
+    description: package version
+    required: true
   unity-npm-packager-version:
     default: "0.1.7"
     description: unity-npm-packager tool version
-    required: false
-  node-auth-token:
-    default: ${{ github.token }}
-    description: node auth token to publish to GitHub NPM registry
     required: false
   service-name:
     description: service name use in header for routing traffic
@@ -52,15 +51,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 6.0.x
-
     - name: Install Unity NPM Packager
       run: |
         gh release download --repo klanggames/tool-unity-npm-packager v${{ inputs.unity-npm-packager-version }} -p '*linux-x64.zip'
@@ -83,10 +73,6 @@ runs:
         # to use a PAT with sufficient permissions here.
         GITHUB_TOKEN: ${{ inputs.tool-download-token }}
 
-    - name: Setup GitVersion
-      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@v1.0.9
-      id: gitversion
-
     - uses: actions/setup-node@v3
       with:
         registry-url: https://npm.pkg.github.com
@@ -105,11 +91,12 @@ runs:
         --world-port ${{ inputs.world-port }}
         --sector-port ${{ inputs.sector-port }}
         --repository ${{ github.repository }}
-        --package-version ${{ steps.gitversion.outputs.fullSemVer }}
+        --package-version ${{ inputs.package-version }}
         --description "${{ inputs.grpc-service-name }} client"
         --grpc-service ${{ inputs.grpc-service-name }}
         --channel-provider-version ${{ inputs.channel-provider-version }}
 
+      # Create the Unity metafiles for the package content
     - name: Create Unity Client NPM Package
       shell: bash
       run: ./unity-npm-packager/bin/linux-x64/Klang.Seed.UnityNpmPackager --destination ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
@@ -121,9 +108,10 @@ runs:
 
     - name: NuGet Proto Pack
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
-      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
       shell: bash
 
+      # Publish the proto NuGet package before restoring the gRPC client NuGet package, as this is referenced by the client
     - name: NuGet Proto Publish
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
       run: dotnet nuget push output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
@@ -136,7 +124,7 @@ runs:
 
     - name: NuGet Client Pack
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-client
-      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
       shell: bash
 
     - name: NuGet Client Publish
@@ -144,12 +132,24 @@ runs:
       run: dotnet nuget push output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
       shell: bash
 
+    - name: NPM Update Version
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-proto
+      shell: bash
+      run: npm version ${{ inputs.package-version }}
+      continue-on-error: true
+
     - name: NPM Publish Proto
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-proto
       run: npm publish
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.node-auth-token }}
+
+    - name: NPM Update Version
+      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
+      shell: bash
+      run: npm version ${{ inputs.package-version }}
+      continue-on-error: true
 
     - name: NPM Publish Client
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
