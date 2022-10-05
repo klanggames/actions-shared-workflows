@@ -108,7 +108,7 @@ runs:
 
     - name: NuGet Proto Pack
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-proto
-      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ inputs.package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
       shell: bash
 
       # Publish the proto NuGet package before restoring the gRPC client NuGet package, as this is referenced by the client
@@ -124,7 +124,7 @@ runs:
 
     - name: NuGet Client Pack
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/nuget-client
-      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ inputs.package-version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o output
       shell: bash
 
     - name: NuGet Client Publish
