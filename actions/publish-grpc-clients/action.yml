@@ -14,7 +14,7 @@ inputs:
     description: PAT to read and write NuGet packages from/to GitHub NuGet registry
     required: true
   grpc-client-generator-version:
-    default: "1.0.14"
+    default: "2.0.0"
     description: gRPC client generator tool version
     required: false
   channel-provider-version:
@@ -84,8 +84,8 @@ runs:
     - name: Create Proto and Client Packages
       shell: bash
       run: ./grpc-client-generator/bin/linux-x64/Klang.Seed.GrpcClientGenerator
+        ${{ inputs.project-path }}
         --output ${{ inputs.output-path }}
-        --project ${{ inputs.project-path }}
         --service ${{ inputs.service-name }}
         --environment-port ${{ inputs.environment-port }}
         --world-port ${{ inputs.world-port }}
