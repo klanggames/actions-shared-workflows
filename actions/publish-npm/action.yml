@@ -66,6 +66,7 @@ runs:
     - uses: actions/setup-node@v3
       with:
         registry-url: "${{ inputs.registry }}"
+        node-version: 16
 
     - name: NPM Update Version
       working-directory: ${{ github.workspace }}/.npm
