@@ -5,7 +5,7 @@ inputs:
     description: The folder of project to publish
     required: true
   token:
-    description: Node authentication token
+    description: NuGet authentication token
     default: ${{ github.token }}
     required: false
 
