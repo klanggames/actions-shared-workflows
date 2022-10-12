@@ -27,6 +27,10 @@ inputs:
     description: NuGet authentication token
     default: ${{ github.token }}
     required: false
+  unity-package-def-path:
+    description: Default folder for package.json and asmdef
+    default: ./unitypackagedef
+    required: false
 
 runs:
   using: composite
@@ -61,7 +65,7 @@ runs:
 
     - name: Create Unity NPM Package
       shell: bash
-      run: ./unity-npm-packager/bin/linux-x64/Klang.Seed.UnityNpmPackager --sources ${{ inputs.project-path }} ./unitypackagedef --destination ${{ github.workspace }}/.npm
+      run: ./unity-npm-packager/bin/linux-x64/Klang.Seed.UnityNpmPackager --sources ${{ inputs.project-path }} ${{ inputs.unity-package-def-path }} --destination ${{ github.workspace }}/.npm
 
     - uses: actions/setup-node@v3
       with:
