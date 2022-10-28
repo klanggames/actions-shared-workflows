@@ -17,8 +17,8 @@ inputs:
     description: service version
     required: true
   platforms:
-    description: docker build target platforms
-    default: linux/amd64,linux/arm64
+    description: "csl of docker build platforms: linux/amd64,linux/amd64"
+    default: linux/amd64
     required: false
   context:
     description: docker file context
