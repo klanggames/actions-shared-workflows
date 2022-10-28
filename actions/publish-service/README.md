@@ -1,6 +1,6 @@
 # `publish-service` - **Github Action**
 
-This action publishes a service docker image to GCR
+This action publishes a service docker image to GCR. By default it build `linux/amd64` and `linux/arm64` images.
 
 ## Example Workflow File
 
@@ -14,6 +14,9 @@ on:
 
 jobs:
   publish-nuget:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     runs-on: ubuntu-latest
       steps:
         - name: Publish Service Docker Image
@@ -26,4 +29,7 @@ jobs:
               gcr.io/seed-209211/some-service:1.0.0
               gcr.io/seed-209211/some-service:latest
             service_version: 1.0.0
+            platforms: "linux/amd64,linux/arm64"
 ```
+
+Don't forget the specify `id-token: 'write'` job permission.
