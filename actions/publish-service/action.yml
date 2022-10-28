@@ -10,8 +10,8 @@ inputs:
   service_account:
     description: gcloud service account email
     required: true
-  tags:
-    description: docker image tag (multiline)
+  images:
+    description: docker image names (multiline)
     required: true
   service_version:
     description: service version
@@ -49,13 +49,26 @@ runs:
         gcloud --quiet auth configure-docker
       shell: bash
 
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ${{ inputs.images }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=raw,value=latest,enable={{is_default_branch}}
+          ${{ inputs.service_version }}
+
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
         platforms: ${{ inputs.platforms }}
         context: ${{ inputs.context }}
         push: true
-        tags: ${{ inputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           ${{ inputs.build_args }}
           SVC_VERSION=${{ inputs.service_version }}
