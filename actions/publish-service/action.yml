@@ -1,0 +1,62 @@
+name: Publish Service Docker Image
+description: Publishes an Docker image to a GCR.
+inputs:
+  project_path:
+    description: The folder of project to publish
+    required: true
+  workload_identity_provider:
+    description: gcloud workload identity provider
+    required: true
+  service_account:
+    description: gcloud service account email
+    required: true
+  tags:
+    description: docker image tag (multiline)
+    required: true
+  service_version:
+    description: service version
+    required: true
+  platforms:
+    description: docker build target platforms
+    default: linux/amd64,linux/arm64
+    required: false
+  context:
+    description: docker file context
+    default: .
+    required: false
+  build_args:
+    description: docker build arguments (multiline)
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - id: "auth"
+      uses: "google-github-actions/auth@v0"
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - uses: google-github-actions/setup-gcloud@v0
+
+    - run: |-
+        gcloud --quiet auth configure-docker
+      shell: bash
+
+    - name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        platforms: ${{ inputs.platforms }}
+        context: ${{ input.context }}
+        push: true
+        tags: ${{ inputs.tags }}
+        build-args: |
+          ${{ inputs.build_args }}
+          SVC_VERSION=${{ inputs.service_version }}
+          PROJECT_PATH=${{ inputs.project_path }}
