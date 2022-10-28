@@ -53,7 +53,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         platforms: ${{ inputs.platforms }}
-        context: ${{ input.context }}
+        context: ${{ inputs.context }}
         push: true
         tags: ${{ inputs.tags }}
         build-args: |
