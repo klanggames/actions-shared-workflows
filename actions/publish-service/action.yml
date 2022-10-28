@@ -27,6 +27,10 @@ inputs:
   build_args:
     description: docker build arguments (multiline)
     required: false
+  token:
+    description: github token to access private NuGet registries
+    default: ${{ github.token }}
+    required: false
 
 runs:
   using: composite
@@ -73,3 +77,4 @@ runs:
           ${{ inputs.build_args }}
           SVC_VERSION=${{ inputs.service_version }}
           PROJECT_PATH=${{ inputs.project_path }}
+          GITHUB_TOKEN=${{ inputs.token }}
