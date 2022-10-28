@@ -22,7 +22,7 @@ jobs:
         - name: Publish Service Docker Image
           uses: klanggames/actions-shared-workflows/actions/publish-service@v1
           with:
-            project-path: ./src/Klang.Seed.SomeServiceProject
+            project_path: ./src/Klang.Seed.SomeServiceProject
             workload_identity_provider: <workload_identity>
             service_account: <service_account>
             tags: |
