@@ -82,10 +82,10 @@ runs:
     - shell: bash
       run: |
           echo "::group::Docker Tags"
-          echo "${{ steps.meta.outputs.tags }}"
+          echo "::notice::${{ steps.meta.outputs.tags }}"
           echo "::endgroup::"
           echo "::group::Docker Labels"
-          echo "${{ steps.meta.outputs.labels }}"
+          echo "::notice::${{ steps.meta.outputs.labels }}"
           echo "::endgroup::"
 
     - uses: marocchino/sticky-pull-request-comment@v2
@@ -102,3 +102,4 @@ runs:
           ```
           ${{ steps.meta.outputs.labels }}
           ```
+      continue-on-error: true
