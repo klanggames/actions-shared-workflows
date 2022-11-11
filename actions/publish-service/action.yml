@@ -84,13 +84,18 @@ runs:
           echo "::group::Docker Tags"
           echo "::notice::${{ steps.meta.outputs.tags }}"
           echo "::endgroup::"
-          
+
+    - uses: jwalton/gh-find-current-pr@v1
+      id: findPr
+
     - uses: marocchino/sticky-pull-request-comment@v2
+      if: success() && steps.findPr.outputs.number
       with:
         hide_and_recreate: true
         hide_classify: "OUTDATED"
         GITHUB_TOKEN: ${{ inputs.token }}
         header: images-${{ inputs.images }}
+        number: ${{ steps.findPr.outputs.number }}
         message: |
           ### Tags
           ```
