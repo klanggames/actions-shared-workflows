@@ -92,14 +92,11 @@ runs:
       with:
         hide_and_recreate: true
         hide_classify: "OUTDATED"
-        header: Docker Tags and Labels
+        GITHUB_TOKEN: ${{ inputs.token }}
+        header: images-${{ inputs.images }}
         message: |
           ### Tags
           ```
           ${{ steps.meta.outputs.tags }}
-          ```
-          ### Labels
-          ```
-          ${{ steps.meta.outputs.labels }}
           ```
       continue-on-error: true
