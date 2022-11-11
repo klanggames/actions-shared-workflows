@@ -78,3 +78,27 @@ runs:
           SVC_VERSION=${{ inputs.service_version }}
           PROJECT_PATH=${{ inputs.project_path }}
           GITHUB_TOKEN=${{ inputs.token }}
+
+    - shell: bash
+      run: |
+          echo "::group::Docker Tags"
+          echo "${{ steps.meta.outputs.tags }}"
+          echo "::endgroup::"
+          echo "::group::Docker Labels"
+          echo "${{ steps.meta.outputs.labels }}"
+          echo "::endgroup::"
+
+    - uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        hide_and_recreate: true
+        hide_classify: "OUTDATED"
+        header: Docker Tags and Labels
+        message: |
+          ### Tags
+          ```
+          ${{ steps.meta.outputs.tags }}
+          ```
+          ### Labels
+          ```
+          ${{ steps.meta.outputs.labels }}
+          ```
