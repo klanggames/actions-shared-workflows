@@ -88,12 +88,8 @@ runs:
           echo "${{ steps.meta.outputs.labels }}"
           echo "::endgroup::"
 
-    - uses: jwalton/gh-find-current-pr@v1
-      id: finder
-      
     - uses: marocchino/sticky-pull-request-comment@v2
       with:
-        number: ${{ steps.finder.outputs.pr }}
         hide_and_recreate: true
         hide_classify: "OUTDATED"
         header: Docker Tags and Labels
