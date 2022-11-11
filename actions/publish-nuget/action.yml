@@ -57,7 +57,7 @@ runs:
         header: nuget-${{ inputs.project-path }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### NuGet - ${{ inputs.project-path }}
+          ### Published NuGet Packages `${{ inputs.project-path }}`
           ```
           Version: ${{ steps.gitversion.outputs.fullSemVer }}
           ```
