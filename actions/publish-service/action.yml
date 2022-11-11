@@ -87,6 +87,7 @@ runs:
 
     - uses: jwalton/gh-find-current-pr@v1
       id: findPr
+      continue-on-error: true
 
     - uses: marocchino/sticky-pull-request-comment@v2
       if: success() && steps.findPr.outputs.number
@@ -97,7 +98,7 @@ runs:
         header: images-${{ inputs.images }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Tags
+          ### Tags - ${{ inputs.images }}
           ```
           ${{ steps.meta.outputs.tags }}
           ```
