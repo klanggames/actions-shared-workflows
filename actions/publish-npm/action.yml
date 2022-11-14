@@ -98,7 +98,7 @@ runs:
         header: npm-${{ inputs.project-path }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Publish NPM Packages `${{ inputs.project-path }}`
+          ### Publish NPM Packages ${{ inputs.project-path }}
           ```
           Version: ${{ steps.gitversion.outputs.fullSemVer }}
           ```

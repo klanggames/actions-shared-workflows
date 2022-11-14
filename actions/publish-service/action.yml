@@ -98,7 +98,7 @@ runs:
         header: images-${{ inputs.images }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Publish Docker Images `${{ inputs.images }}`
+          ### Publish Docker Images ${{ inputs.images }}
           ```
           ${{ steps.meta.outputs.tags }}
           ```
