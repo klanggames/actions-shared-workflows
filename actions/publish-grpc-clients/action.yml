@@ -14,11 +14,11 @@ inputs:
     description: PAT to read and write NuGet packages from/to GitHub NuGet registry
     required: true
   grpc-client-generator-version:
-    default: "3.0.4"
+    default: "4.0.0"
     description: gRPC client generator tool version
     required: false
   channel-provider-version:
-    default: "1.0.0"
+    default: "10.0.0"
     description: GRPCChannelProvider package version
     required: false
   package-version:
@@ -31,6 +31,10 @@ inputs:
   service-name:
     description: service name use in header for routing traffic
     required: true
+  sharedsvc-port:
+    default: "0"
+    description: shared services port
+    required: false
   environment-port:
     default: "0"
     description: environment port
@@ -87,6 +91,7 @@ runs:
         ${{ inputs.project-path }}
         --output ${{ inputs.output-path }}
         --service ${{ inputs.service-name }}
+        --sharedsvc-port ${{ inputs.sharedsvc-port }}
         --environment-port ${{ inputs.environment-port }}
         --world-port ${{ inputs.world-port }}
         --sector-port ${{ inputs.sector-port }}

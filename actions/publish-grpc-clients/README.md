@@ -12,10 +12,10 @@ This action publishes gRPC client packages form a service project.
 * `channel-provider-version`: (optional) GRPCChannelProvider package version
 * `unity-npm-packager-version`: (optional) unity-npm-packager tool version
 * `service-name`: service name use in header for routing traffic
+* `sharedsvc-port`: (optional) shared services port
 * `environment-port`: (optional) environment port
 * `world-port`: (optional) world port
 * `sector-port`: (optional) sector port
-* `output-path`: (optional) output folder
 * `output-path`: (optional) output folder
 
 ## Example Workflow File
