@@ -162,3 +162,22 @@ runs:
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
+        
+    - uses: jwalton/gh-find-current-pr@v1
+      id: findPr
+      continue-on-error: true
+
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: success() && steps.findPr.outputs.number
+      with:
+        hide_and_recreate: true
+        hide_classify: "OUTDATED"
+        GITHUB_TOKEN: ${{ github.token }}
+        header: nuget-${{ inputs.project-path }}
+        number: ${{ steps.findPr.outputs.number }}
+        message: |
+          ### Published gRPC Packages `${{ inputs.grpc-service-name }}`
+          ```
+          Version: `${{ inputs.package-version }}`
+          ```
+      continue-on-error: true
