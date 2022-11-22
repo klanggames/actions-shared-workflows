@@ -10,8 +10,8 @@ inputs:
   images:
     description: docker image names (multiline)
     required: true
-  version:
-    description: semantic version
+  tag:
+    description: image tag
     required: true
   platforms:
     description: "csl of docker build platforms: linux/amd64,linux/arm64"
@@ -67,7 +67,7 @@ runs:
           type=ref,event=branch
           type=ref,event=pr
           type=raw,value=latest,enable={{is_default_branch}}
-          ${{ inputs.version }}
+          ${{ inputs.tag }}
 
     - name: Build and push
       uses: docker/build-push-action@v3
