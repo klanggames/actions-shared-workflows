@@ -24,6 +24,9 @@ inputs:
     description: docker file context
     default: .
     required: false
+  file:
+    description: path to the docker file
+    required: false
   build_args:
     description: docker build arguments (multiline)
     required: false
@@ -70,6 +73,7 @@ runs:
       with:
         platforms: ${{ inputs.platforms }}
         context: ${{ inputs.context }}
+        file: ${{ inputs.file }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
