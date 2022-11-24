@@ -96,7 +96,7 @@ runs:
       with:
         hide_and_recreate: true
         hide_classify: "OUTDATED"
-        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ github.token }}
         header: images-${{ inputs.images }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
