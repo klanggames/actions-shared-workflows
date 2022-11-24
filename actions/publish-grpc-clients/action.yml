@@ -176,8 +176,8 @@ runs:
         header: nuget-${{ inputs.project-path }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Published gRPC Packages `${{ inputs.grpc-service-name }}`
+          ### Published gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}
           ```
-          Version: `${{ inputs.package-version }}`
+          Version: ${{ inputs.package-version }}
           ```
       continue-on-error: true
