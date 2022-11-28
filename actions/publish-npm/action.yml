@@ -60,7 +60,7 @@ runs:
       shell: bash
 
     - name: Setup GitVersion
-      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+      uses: ./actions/setup-gitversion
       id: gitversion
 
     - name: Create Unity NPM Package

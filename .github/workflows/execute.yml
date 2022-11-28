@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup GitVersion
-        uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+        uses: ./actions/setup-gitversion
         id: gitversion
 
       - name: Create Release

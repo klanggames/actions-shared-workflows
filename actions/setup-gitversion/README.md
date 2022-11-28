@@ -21,5 +21,5 @@ jobs:
     runs-on: ubuntu-latest
       steps:
         - name: Setup GitVersion
-          uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+          uses: klanggames/actions-shared-workflows/actions/setup-gitversion@v2
 ```

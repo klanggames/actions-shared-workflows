@@ -26,7 +26,7 @@ runs:
       shell: bash
 
     - name: Setup GitVersion
-      uses: klanggames/actions-shared-workflows/actions/setup-gitversion@main
+      uses: ./actions/setup-gitversion
       id: gitversion
 
     - name: Restore
@@ -55,7 +55,7 @@ runs:
         header: nuget-${{ inputs.project-path }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Published NuGet Packages `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}
+          ### Published NuGet Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}
           ```
           Version: ${{ steps.gitversion.outputs.fullSemVer }}
           ```
