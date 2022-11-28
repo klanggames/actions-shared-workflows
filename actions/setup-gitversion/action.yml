@@ -26,7 +26,24 @@ runs:
     - name: Create GitVersion.yml
       shell: bash
       run: |
-        echo "mode: Mainline" > GitVersion.yml
+        CONTENT=$(cat << EOF
+        mode: Mainline
+        branches:
+        pull-request:
+          regex: ^(pull|pull\-requests|pr)[/-]
+          mode: Mainline
+          tag: useBranchName
+          increment: Inherit
+          prevent-increment-of-merged-branch-version: false
+          tag-number-pattern: '[/-](?<number>\d+)[-/]'
+          track-merge-target: false
+          source-branches: [ 'main', 'release', 'feature', 'support', 'hotfix' ]
+          tracks-release-branches: false
+          is-release-branch: false
+          is-mainline: false
+        EOF
+        )
+        echo "$CONTENT" > GitVersion.yml
 
     - name: Use GitVersion
       uses: gittools/actions/gitversion/execute@v0.9.15
