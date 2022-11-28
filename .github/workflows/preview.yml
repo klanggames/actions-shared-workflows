@@ -3,7 +3,7 @@ on:
   pull_request:
 
 jobs:
-  CI:
+  preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
