@@ -31,7 +31,6 @@ runs:
         branches:
           pull-request:
             regex: ^(pull|pull\-requests|pr)[/-]
-            mode: Mainline
             tag: useBranchName
             increment: Inherit
             prevent-increment-of-merged-branch-version: false
