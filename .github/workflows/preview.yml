@@ -1,0 +1,26 @@
+name: Preview
+on:
+  pull_request:
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup GitVersion
+        uses: ./actions/setup-gitversion
+        id: gitversion
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          header: preview
+          message: |
+            ### Preview for changes in ${{ github.event.pull_request.head.sha }}
+            ```
+            Version: ${{ steps.gitversion.outputs.fullSemVer }}
+            ```
