@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
       steps:
         - name: Publish NuGet
-          uses: klanggames/actions-shared-workflows/actions/publish-nuget@main
+          uses: klanggames/actions-shared-workflows/actions/publish-nuget@v2
           with:
             project-path: ./src/Klang.Seed.YamlConfigParser
             token: ${{ secrets.GITHUB_TOKEN }}

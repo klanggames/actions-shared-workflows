@@ -98,7 +98,7 @@ runs:
         header: images-${{ inputs.images }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
-          ### Publish Docker Images ${{ inputs.images }} for changes in ${{ github.event.pull_request.head.sha }}
+          ### Publish Docker Images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}
           ```
           ${{ steps.meta.outputs.tags }}
           ```

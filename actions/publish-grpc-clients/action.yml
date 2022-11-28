@@ -171,7 +171,7 @@ runs:
       if: success() && steps.findPr.outputs.number
       with:
         GITHUB_TOKEN: ${{ github.token }}
-        header: nuget-${{ inputs.project-path }}
+        header: nuget-${{ inputs.grpc-service-name }}
         number: ${{ steps.findPr.outputs.number }}
         message: |
           ### Published gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}

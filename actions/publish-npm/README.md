@@ -17,7 +17,7 @@ This action publishes an unity compatible npm package with the semantic version 
     required: false
 * `registry`:
     description: Target NPM registry,
-    default: https://npm.pkg.github.com,
+    default: <https://npm.pkg.github.com>,
     required: false
 * `node-auth-token`:
     description: Node authentication token,
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
       steps:
         - name: Publish NPM
-          uses: klanggames/actions-shared-workflows/actions/publish-npm@main
+          uses: klanggames/actions-shared-workflows/actions/publish-npm@mv2
           with:
             project-path: ./src/Klang.Seed.YamlConfigParser
             tool-token: ${{ secrets.GITHUB_TOKEN }}

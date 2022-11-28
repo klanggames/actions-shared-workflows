@@ -19,7 +19,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Build and Test
-              uses: klanggames/actions-shared-workflows/actions/build-and-test@main
+              uses: klanggames/actions-shared-workflows/actions/build-and-test@v2
               with:
                   project-path: ./src
 ```

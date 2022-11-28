@@ -21,5 +21,5 @@ jobs:
     runs-on: ubuntu-latest
       steps:
         - name: Create Tag
-          uses: klanggames/actions-shared-workflows/actions/create-tag@main
+          uses: klanggames/actions-shared-workflows/actions/create-tag@v2
 ```
