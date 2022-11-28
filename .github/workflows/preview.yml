@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup GitVersion
-        uses: klanggames/actions-shared-workflows/actions/setup-gitversion@${{ github.ref }}
+        uses: ./actions/setup-gitversion
         id: gitversion
 
       - uses: marocchino/sticky-pull-request-comment@v2
