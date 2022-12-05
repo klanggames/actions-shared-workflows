@@ -165,8 +165,10 @@ runs:
       run: |
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '## Publishing gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "### Published Version"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
-        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "Version: ${{ inputs.package-version }}"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "${{ inputs.package-version }}"
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt ':heavy_check_mark: Success publishing gRPC packages'
         cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
@@ -177,6 +179,11 @@ runs:
       run: |
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '## Publishing gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "### Failed Version"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "${{ inputs.package-version }}"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt ':boom: Publishing gRPC packages failed. Please see details in Actions output.'
         cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
