@@ -104,7 +104,7 @@ runs:
         echo >>build-push-docker-pr-comment.txt "### Tags"
         echo >>build-push-docker-pr-comment.txt
         echo >>build-push-docker-pr-comment.txt '```'
-        echo >>build-push-docker-pr-comment.txt '${{ steps.meta.outputs.tags }}'
+        echo >>build-push-docker-pr-comment.txt "${{ steps.meta.outputs.tags }}"
         echo >>build-push-docker-pr-comment.txt '```'
         echo >>build-push-docker-pr-comment.txt ':heavy_check_mark: Success publishing docker images'
         cat build-push-docker-pr-comment.txt >>$GITHUB_STEP_SUMMARY
@@ -118,7 +118,7 @@ runs:
         echo >>build-push-docker-pr-comment.txt "### Failed Tags"
         echo >>build-push-docker-pr-comment.txt
         echo >>build-push-docker-pr-comment.txt '```'
-        echo >>build-push-docker-pr-comment.txt '${{ steps.meta.outputs.tags }}'
+        echo >>build-push-docker-pr-comment.txt "${{ steps.meta.outputs.tags }}"
         echo >>build-push-docker-pr-comment.txt '```'
         echo >>build-push-docker-pr-comment.txt ':boom: Publishing docker images failed. Please see details in Actions output.'
         cat build-push-docker-pr-comment.txt >>$GITHUB_STEP_SUMMARY
