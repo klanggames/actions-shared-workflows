@@ -55,6 +55,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event.pull_request
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        header: publishing-grpc-client-${{ inputs.grpc-service-name }}
+        message: |
+          ## Publishing gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}
+          :warning: being published... please stand by!
+
     - name: Install Unity NPM Packager
       run: |
         gh release download --repo klanggames/tool-unity-npm-packager v${{ inputs.unity-npm-packager-version }} -p '*linux-x64.zip'
@@ -162,20 +171,30 @@ runs:
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
-        
-    - uses: jwalton/gh-find-current-pr@v1
-      id: findPr
-      continue-on-error: true
+
+    - name: Inform about success
+      if: success()
+      shell: bash
+      run: |
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "## Publishing gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "Version: ${{ inputs.package-version }}"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '+1 Success publishing gRPC packages'
+        cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
+
+    - name: Inform about failure
+      if: failure()
+      shell: bash
+      run: |
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "## Publishing gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt ':boom: Publishing gRPC packages failed. Please see details in Actions output.'
+        cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: success() && steps.findPr.outputs.number
       with:
         GITHUB_TOKEN: ${{ github.token }}
-        header: nuget-${{ inputs.grpc-service-name }}
-        number: ${{ steps.findPr.outputs.number }}
-        message: |
-          ### Published gRPC Packages `${{ inputs.grpc-service-name }}` for changes in ${{ github.event.pull_request.head.sha }}
-          ```
-          Version: ${{ inputs.package-version }}
-          ```
-      continue-on-error: true
+        header: publishing-grpc-client-${{ inputs.grpc-service-name }}
+        path: ${{ inputs.grpc-service-name }}-pr-comment.txt

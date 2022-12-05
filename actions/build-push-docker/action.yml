@@ -35,6 +35,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event.pull_request
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        header: images-${{ inputs.images }}
+        message: |
+          ## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}
+          :warning: being published... please stand by!
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
@@ -87,19 +96,31 @@ runs:
         echo "::notice::${{ steps.meta.outputs.tags }}"
         echo "::endgroup::"
 
-    - uses: jwalton/gh-find-current-pr@v1
-      id: findPr
-      continue-on-error: true
+    - name: Inform about success
+      if: success()
+      shell: bash
+      run: |
+        echo >>${{ inputs.images }}-pr-comment.txt "## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.images }}-pr-comment.txt
+        echo >>${{ inputs.images }}-pr-comment.txt "### Tags"
+        echo >>${{ inputs.images }}-pr-comment.txt
+        echo >>${{ inputs.images }}-pr-comment.txt '```'
+        echo >>${{ inputs.images }}-pr-comment.txt "${{ steps.meta.outputs.tags }}"
+        echo >>${{ inputs.images }}-pr-comment.txt '```'
+        echo >>${{ inputs.images }}-pr-comment.txt '+1 Success publishing docker images'
+        cat ${{ inputs.images }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
+
+    - name: Inform about failure
+      if: failure()
+      shell: bash
+      run: |
+        echo >>${{ inputs.images }}-pr-comment.txt "## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.images }}-pr-comment.txt
+        echo >>${{ inputs.images }}-pr-comment.txt ':boom: Publishing docker images failed. Please see details in Actions output.'
+        cat ${{ inputs.images }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: success() && steps.findPr.outputs.number
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: images-${{ inputs.images }}
-        number: ${{ steps.findPr.outputs.number }}
-        message: |
-          ### Publish Docker Images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}
-          ```
-          ${{ steps.meta.outputs.tags }}
-          ```
-      continue-on-error: true
+        path: ${{ inputs.images }}-pr-comment.txt
