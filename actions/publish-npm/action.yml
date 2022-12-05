@@ -98,7 +98,7 @@ runs:
       if: success()
       shell: bash
       run: |
-        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "## Publishing NPM Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.project-path }}-npm-pr-comment.txt '## Publishing NPM Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt "Version: ${{ steps.gitversion.outputs.fullSemVer }}"
@@ -110,7 +110,7 @@ runs:
       if: failure()
       shell: bash
       run: |
-        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "## Publishing NPM Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.project-path }}-npm-pr-comment.txt '## Publishing NPM Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt ':boom: Publishing NPM package failed. Please see details in Actions output.'
         cat ${{ inputs.project-path }}-npm-pr-comment.txt >>$GITHUB_STEP_SUMMARY

@@ -100,12 +100,12 @@ runs:
       if: success()
       shell: bash
       run: |
-        echo >>${{ inputs.images }}-pr-comment.txt "## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.images }}-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}''
         echo >>${{ inputs.images }}-pr-comment.txt
         echo >>${{ inputs.images }}-pr-comment.txt "### Tags"
         echo >>${{ inputs.images }}-pr-comment.txt
         echo >>${{ inputs.images }}-pr-comment.txt '```'
-        echo >>${{ inputs.images }}-pr-comment.txt "${{ steps.meta.outputs.tags }}"
+        echo >>${{ inputs.images }}-pr-comment.txt '${{ steps.meta.outputs.tags }}''
         echo >>${{ inputs.images }}-pr-comment.txt '```'
         echo >>${{ inputs.images }}-pr-comment.txt '+1 Success publishing docker images'
         cat ${{ inputs.images }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
@@ -114,7 +114,7 @@ runs:
       if: failure()
       shell: bash
       run: |
-        echo >>${{ inputs.images }}-pr-comment.txt "## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}"
+        echo >>${{ inputs.images }}-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>${{ inputs.images }}-pr-comment.txt
         echo >>${{ inputs.images }}-pr-comment.txt ':boom: Publishing docker images failed. Please see details in Actions output.'
         cat ${{ inputs.images }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
