@@ -99,7 +99,7 @@ runs:
       if: success()
       shell: bash
       run: |
-        echo >>build-push-docker-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}''
+        echo >>build-push-docker-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}'
         echo >>build-push-docker-pr-comment.txt
         echo >>build-push-docker-pr-comment.txt "### Tags"
         echo >>build-push-docker-pr-comment.txt
