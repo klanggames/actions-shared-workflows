@@ -168,7 +168,7 @@ runs:
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt "Version: ${{ inputs.package-version }}"
         echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '```'
-        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt '+1 Success publishing gRPC packages'
+        echo >>${{ inputs.grpc-service-name }}-pr-comment.txt ':heavy_check_mark: Success publishing gRPC packages'
         cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - name: Inform about failure

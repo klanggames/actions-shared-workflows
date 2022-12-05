@@ -106,7 +106,7 @@ runs:
         echo >>build-push-docker-pr-comment.txt '```'
         echo >>build-push-docker-pr-comment.txt '${{ steps.meta.outputs.tags }}''
         echo >>build-push-docker-pr-comment.txt '```'
-        echo >>build-push-docker-pr-comment.txt '+1 Success publishing docker images'
+        echo >>build-push-docker-pr-comment.txt ':heavy_check_mark: Success publishing docker images'
         cat build-push-docker-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - name: Inform about failure

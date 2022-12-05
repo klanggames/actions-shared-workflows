@@ -102,7 +102,7 @@ runs:
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt "Version: ${{ steps.gitversion.outputs.fullSemVer }}"
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
-        echo >>${{ inputs.project-path }}-npm-pr-comment.txt '+1 Success publishing NPM package'
+        echo >>${{ inputs.project-path }}-npm-pr-comment.txt ':heavy_check_mark: Success publishing NPM package'
         cat ${{ inputs.project-path }}-npm-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - name: Inform about failure
