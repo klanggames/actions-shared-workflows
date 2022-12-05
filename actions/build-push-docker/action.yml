@@ -36,7 +36,6 @@ runs:
   using: composite
   steps:
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event.pull_request
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: images-${{ inputs.images }}
@@ -120,6 +119,7 @@ runs:
         cat build-push-docker-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
+      if: success() || failure()
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: images-${{ inputs.images }}

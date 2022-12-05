@@ -56,7 +56,6 @@ runs:
   using: composite
   steps:
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event.pull_request
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: publishing-grpc-client-${{ inputs.grpc-service-name }}
@@ -146,24 +145,12 @@ runs:
       run: dotnet nuget push output/*.nupkg --api-key ${{ github.token }} --source "github" --skip-duplicate
       shell: bash
 
-    - name: NPM Update Version
-      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-proto
-      shell: bash
-      run: npm version ${{ inputs.package-version }}
-      continue-on-error: true
-
     - name: NPM Publish Proto
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-proto
       run: npm publish
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
-
-    - name: NPM Update Version
-      working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
-      shell: bash
-      run: npm version ${{ inputs.package-version }}
-      continue-on-error: true
 
     - name: NPM Publish Client
       working-directory: ${{ inputs.output-path }}/${{ inputs.grpc-service-name }}/npm-client
@@ -194,6 +181,7 @@ runs:
         cat ${{ inputs.grpc-service-name }}-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
+      if: success() || failure()
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: publishing-grpc-client-${{ inputs.grpc-service-name }}
