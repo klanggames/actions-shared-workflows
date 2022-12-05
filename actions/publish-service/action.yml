@@ -38,23 +38,19 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        header: publish-service-${{ inputs.images }}
+        message: |
+          ## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}
+          :warning: being published... please stand by!
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-
-    - id: "auth"
-      uses: "google-github-actions/auth@v0"
-      with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
-
-    - uses: google-github-actions/setup-gcloud@v0
-
-    - run: |-
-        gcloud --quiet auth configure-docker
-      shell: bash
 
     - name: Docker meta
       id: meta
@@ -67,6 +63,18 @@ runs:
           type=ref,event=pr
           type=raw,value=latest,enable={{is_default_branch}}
           ${{ inputs.service_version }}
+
+    - id: "auth"
+      uses: "google-github-actions/auth@v0"
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - uses: google-github-actions/setup-gcloud@v0
+
+    - run: |-
+        gcloud --quiet auth configure-docker
+      shell: bash
 
     - name: Build and push
       uses: docker/build-push-action@v3
@@ -85,23 +93,41 @@ runs:
 
     - shell: bash
       run: |
-          echo "::group::Docker Tags"
-          echo "::notice::${{ steps.meta.outputs.tags }}"
-          echo "::endgroup::"
+        echo "::group::Docker Tags"
+        echo "::notice::${{ steps.meta.outputs.tags }}"
+        echo "::endgroup::"
 
-    - uses: jwalton/gh-find-current-pr@v1
-      id: findPr
-      continue-on-error: true
+    - name: Inform about success
+      if: success()
+      shell: bash
+      run: |
+        echo >>publish-service-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}'
+        echo >>publish-service-pr-comment.txt
+        echo >>publish-service-pr-comment.txt "### Tags"
+        echo >>publish-service-pr-comment.txt
+        echo >>publish-service-pr-comment.txt '```'
+        echo >>publish-service-pr-comment.txt "${{ steps.meta.outputs.tags }}"
+        echo >>publish-service-pr-comment.txt '```'
+        echo >>publish-service-pr-comment.txt ':heavy_check_mark: Success publishing docker images'
+        cat publish-service-pr-comment.txt >>$GITHUB_STEP_SUMMARY
+
+    - name: Inform about failure
+      if: failure()
+      shell: bash
+      run: |
+        echo >>publish-service-pr-comment.txt '## Publishing Docker images `${{ inputs.images }}` for changes in ${{ github.event.pull_request.head.sha }}'
+        echo >>publish-service-pr-comment.txt
+        echo >>publish-service-pr-comment.txt "### Failed Tags"
+        echo >>publish-service-pr-comment.txt
+        echo >>publish-service-pr-comment.txt '```'
+        echo >>publish-service-pr-comment.txt "${{ steps.meta.outputs.tags }}"
+        echo >>publish-service-pr-comment.txt '```'
+        echo >>publish-service-pr-comment.txt ':boom: Publishing docker images failed. Please see details in Actions output.'
+        cat publish-service-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: success() && steps.findPr.outputs.number
+      if: success() || failure()
       with:
         GITHUB_TOKEN: ${{ github.token }}
-        header: images-${{ inputs.images }}
-        number: ${{ steps.findPr.outputs.number }}
-        message: |
-          ### Publish Docker Images ${{ inputs.images }} for changes in ${{ github.event.pull_request.head.sha }}
-          ```
-          ${{ steps.meta.outputs.tags }}
-          ```
-      continue-on-error: true
+        header: publish-service-${{ inputs.images }}
+        path: publish-service-pr-comment.txt
