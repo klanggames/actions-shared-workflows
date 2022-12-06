@@ -67,7 +67,7 @@ runs:
         cat ${{ inputs.project-path }}-nuget-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - name: Inform about failure
-      if: failure()
+      if: failure() || cancelled()
       shell: bash
       run: |
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt '## Publishing NuGet Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}'
@@ -81,7 +81,7 @@ runs:
         cat ${{ inputs.project-path }}-nuget-pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
     - uses: marocchino/sticky-pull-request-comment@v2
-      if: success() || failure()
+      if: always()
       with:
         GITHUB_TOKEN: ${{ github.token }}
         header: nuget-${{ inputs.project-path }}
