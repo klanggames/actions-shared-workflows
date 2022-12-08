@@ -1,0 +1,62 @@
+name: Get gRPC Client Config
+description: get the grpc client config from an .env file
+inputs:
+  github-token:
+    description: git hub token
+    required: false
+    default: ${{ github.token }}
+  path:
+    description: .env file
+    required: false
+    default: .env
+
+outputs:
+  grpc-services:
+    description: ""
+    value: ${{ steps.config.outputs.grpc-services }}
+  environment-port:
+    description: ""
+    value: ${{ steps.config.outputs.environment-port }}
+  sharedsvc-port:
+    description: ""
+    value: ${{ steps.config.outputs.sharedsvc-port }}
+  world-port:
+    description: ""
+    value: ${{ steps.config.outputs.world-port }}
+  service-name:
+    description: ""
+    value: ${{ steps.config.outputs.service-name }}
+  sector-port:
+    description: ""
+    value: ${{ steps.config.outputs.sector-port }}
+  grpc-channel-provider-version:
+    description: ""
+    value: ${{ steps.config.outputs.grpc-channel-provider-version }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+    
+    - uses: falti/dotenv-action@v1
+      id: dotenv
+      with:
+        path: ${{ inputs.path }}
+
+    - id: config
+      shell: bash
+      run: |
+        grpc_services='{"grpc-service-name":${{ steps.dotenv.outputs.grpc_services }}}'
+        environment_port=${{ steps.dotenv.outputs.environment_port }}
+        sharedsvc_port=${{ steps.dotenv.outputs.sharedsvc_port }}
+        world_port=${{ steps.dotenv.outputs.world_port }}
+        sector_port=${{ steps.dotenv.outputs.sector_port }}
+        service_name=${{ steps.dotenv.outputs.service_name }}
+        grpc_channel_provider_version=${{ steps.dotenv.outputs.grpc_channel_provider_version }}
+        echo "grpc-services=$grpc_services" >> $GITHUB_OUTPUT
+        echo "environment-port=${environment_port:-0}" >> $GITHUB_OUTPUT
+        echo "sharedsvc-port=${sharedsvc_port:-0}" >> $GITHUB_OUTPUT
+        echo "world-port=${world_port:-0}" >> $GITHUB_OUTPUT
+        echo "sector-port=${sector_port:-0}" >> $GITHUB_OUTPUT
+        echo "service-name=$service_name" >> $GITHUB_OUTPUT
+        echo "grpc-channel-provider-version=${grpc_channel_provider_version:-10.0.0}" >> $GITHUB_OUTPUT
