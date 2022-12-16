@@ -51,8 +51,7 @@ jobs:
         - uses: ./actions/setup-gitversion
           id: gitversion
 
-        - name: Publish NPM
-          uses: klanggames/actions-shared-workflows/actions/publish-npm@mv2
+        - uses: klanggames/actions-shared-workflows/actions/publish-npm@v3
           with:
             project-path: ./src/Klang.Seed.YamlConfigParser
             version: ${{ steps.gitversion.outputs.fullSemVer }}s
