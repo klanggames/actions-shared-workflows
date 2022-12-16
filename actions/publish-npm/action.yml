@@ -4,6 +4,9 @@ inputs:
   project-path:
     description: The path to the project to publish
     required: true
+  version:
+    description: The package version
+    required: true
   tool-token:
     description: github token used to download the unity npm packager tool
     required: true
@@ -43,11 +46,6 @@ runs:
           ## Publishing NPM Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}
           :warning: being published... please stand by!
 
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
     - name: Install Unity NPM Packager
       run: |
         gh release download --repo klanggames/tool-unity-npm-packager v${{ inputs.tool-version }} -p '*linux-x64.zip'
@@ -67,10 +65,6 @@ runs:
       run: dotnet nuget add source --username klanggames --password ${{ inputs.nuget-auth-token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
       shell: bash
 
-    - name: Setup GitVersion
-      uses: ./actions/setup-gitversion
-      id: gitversion
-
     - name: Create Unity NPM Package
       shell: bash
       run: ./unity-npm-packager/bin/linux-x64/Klang.Seed.UnityNpmPackager --sources ${{ inputs.project-path }} ${{ inputs.unity-package-def-path }} --destination ${{ github.workspace }}/.npm
@@ -83,7 +77,7 @@ runs:
     - name: NPM Update Version
       working-directory: ${{ github.workspace }}/.npm
       shell: bash
-      run: npm version ${{ steps.gitversion.outputs.fullSemVer }}
+      run: npm version ${{ inputs.version }}
       continue-on-error: true
 
     - name: NPM Publish
@@ -102,7 +96,7 @@ runs:
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt "### Published Version"
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
-        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "${{ steps.gitversion.outputs.fullSemVer }}"
+        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "${{ inputs.version }}"
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt ':heavy_check_mark: Success publishing NPM package'
         cat ${{ inputs.project-path }}-npm-pr-comment.txt >>$GITHUB_STEP_SUMMARY
@@ -116,7 +110,7 @@ runs:
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt "### Failed Version"
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
-        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "${{ steps.gitversion.outputs.fullSemVer }}"
+        echo >>${{ inputs.project-path }}-npm-pr-comment.txt "${{ inputs.version }}"
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-npm-pr-comment.txt ':boom: Publishing NPM package failed. Please see details in Actions output.'
         cat ${{ inputs.project-path }}-npm-pr-comment.txt >>$GITHUB_STEP_SUMMARY
