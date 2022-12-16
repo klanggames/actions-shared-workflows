@@ -5,12 +5,15 @@ This action publishes a nuget package with the semantic version from GitVersion 
 ## Input
 
 * `project-path`:
-    description: The path to the project to publish,
-    required: true
+  * description: The path to the project to publish,
+  * required: true
+* `version`:
+  * description: The package version
+  * required: true
 * `token`:
-    description: NuGet source api-key,
-    default: ${{ github.token }},
-    required: false
+  * description: NuGet source api-key,
+  * default: ${{ github.token }},
+  * required: false
 
 ## Example Workflow File
 
@@ -26,9 +29,16 @@ jobs:
   publish-nuget:
     runs-on: ubuntu-latest
       steps:
-        - name: Publish NuGet
-          uses: klanggames/actions-shared-workflows/actions/publish-nuget@v2
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - uses: ./actions/setup-gitversion
+          id: gitversion
+
+        - uses: klanggames/actions-shared-workflows/actions/publish-nuget@v3
           with:
             project-path: ./src/Klang.Seed.YamlConfigParser
+            version: ${{ steps.gitversion.outputs.fullSemVer }}
             token: ${{ secrets.GITHUB_TOKEN }}
 ```

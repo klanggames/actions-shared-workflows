@@ -4,6 +4,9 @@ inputs:
   project-path:
     description: The folder of project to publish
     required: true
+  version:
+    description: The package version
+    required: true
   token:
     description: NuGet authentication token
     default: ${{ github.token }}
@@ -20,11 +23,6 @@ runs:
           ## Publishing NuGet Package `${{ inputs.project-path }}` for changes in ${{ github.event.pull_request.head.sha }}
           :warning: being published... please stand by!
 
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
     - uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
@@ -33,10 +31,6 @@ runs:
       run: dotnet nuget add source --username klanggames --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/klanggames/index.json"
       shell: bash
 
-    - name: Setup GitVersion
-      uses: ./actions/setup-gitversion
-      id: gitversion
-
     - name: Restore
       working-directory: ${{ inputs.project-path }}
       run: dotnet restore
@@ -44,7 +38,7 @@ runs:
 
     - name: Pack
       working-directory: ${{ inputs.project-path }}
-      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ steps.gitversion.outputs.fullSemVer }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ inputs.project-path }}/output
+      run: dotnet pack --no-restore -c Release --include-symbols -p:Version=${{ inputs.version }} -p:RepositoryUrl=${{ github.repositoryUrl }} -o ${{ inputs.project-path }}/output
       shell: bash
 
     - name: NuGet Publish
@@ -61,7 +55,7 @@ runs:
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "### Published Version"
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt '```'
-        echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "${{ steps.gitversion.outputs.fullSemVer }}"
+        echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "${{ inputs.version }}"
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt ':heavy_check_mark: Success publishing NuGet package'
         cat ${{ inputs.project-path }}-nuget-pr-comment.txt >>$GITHUB_STEP_SUMMARY
@@ -75,7 +69,7 @@ runs:
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "### Failed Version"
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt '```'
-        echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "${{ steps.gitversion.outputs.fullSemVer }}"
+        echo >>${{ inputs.project-path }}-nuget-pr-comment.txt "${{ inputs.version }}"
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt '```'
         echo >>${{ inputs.project-path }}-nuget-pr-comment.txt ':boom: Publishing NuGet package failed. Please see details in Actions output.'
         cat ${{ inputs.project-path }}-nuget-pr-comment.txt >>$GITHUB_STEP_SUMMARY
